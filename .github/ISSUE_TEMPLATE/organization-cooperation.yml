@@ -1,0 +1,49 @@
+name: 组织合作咨询
+description: 工作室、企业、公益组织和政府机构的公开初步合作入口
+title: "[组织合作] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        此表单只用于公开初步接洽。请勿提交合同、电话、证件、银行账户或其他敏感资料。
+  - type: input
+    id: organization
+    attributes:
+      label: 机构公开名称
+      description: 请填写可公开核验的机构、工作室或组织名称。
+      placeholder: 示例：某某工作室
+    validations:
+      required: true
+  - type: dropdown
+    id: organization-type
+    attributes:
+      label: 机构类型
+      options:
+        - 工作室
+        - 企业
+        - 公益组织
+        - 政府或事业单位
+        - 其他组织
+    validations:
+      required: true
+  - type: textarea
+    id: direction
+    attributes:
+      label: 合作方向
+      description: 请简述赞助、联合传播、公开专题或双方平台曝光等公开合作设想。
+    validations:
+      required: true
+  - type: input
+    id: public-reference
+    attributes:
+      label: 公开参考链接
+      description: 可选，仅填写机构官网或公开平台主页，不要填写私人联系方式。
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: 提交确认
+      options:
+        - label: 我确认本 Issue 不包含合同、电话、证件、银行账户或其他敏感资料。
+          required: true
+        - label: 我理解正式合作款不通过个人支持二维码收取。
+          required: true
