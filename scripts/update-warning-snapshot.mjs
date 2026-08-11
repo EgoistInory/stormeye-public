@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 
 const endpoint = 'https://www.nmc.cn/rest/findAlarm?pageNo=1&pageSize=100'
@@ -24,17 +24,6 @@ if (!ids.length) throw new Error('NMC warning feed returned no warnings')
 const signature = JSON.stringify(ids)
 const next = { fetchedAt: new Date().toISOString(), signature, payload }
 
-let previous
-try {
-  previous = JSON.parse(await readFile(output, 'utf8'))
-} catch {
-  previous = null
-}
-
-if (previous?.signature === signature) {
-  console.log(`NMC warning snapshot unchanged: ${ids.length} records`)
-} else {
-  await mkdir(dirname(output), { recursive: true })
-  await writeFile(output, `${JSON.stringify(next)}\n`, 'utf8')
-  console.log(`NMC warning snapshot updated: ${ids.length} records`)
-}
+await mkdir(dirname(output), { recursive: true })
+await writeFile(output, `${JSON.stringify(next)}\n`, 'utf8')
+console.log(`NMC warning snapshot refreshed: ${ids.length} records`)
