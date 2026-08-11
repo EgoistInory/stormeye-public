@@ -1,4 +1,4 @@
-name: Update public typhoon snapshot
+name: Update public weather snapshots
 
 on:
   schedule:
@@ -23,16 +23,18 @@ jobs:
           node-version: 22
       - name: Fetch current NMC snapshot
         run: node scripts/update-typhoon-snapshot.mjs
+      - name: Fetch current official warnings
+        run: node scripts/update-warning-snapshot.mjs
       - name: Validate snapshot JSON
-        run: node -e "const fs=require('node:fs'); const value=JSON.parse(fs.readFileSync('public/data/nmc-latest.json','utf8')); if(typeof value.active!=='boolean'||typeof value.signature!=='string') process.exit(1)"
+        run: node -e "const fs=require('node:fs'); const typhoon=JSON.parse(fs.readFileSync('public/data/nmc-latest.json','utf8')); const warnings=JSON.parse(fs.readFileSync('public/data/nmc-warnings-latest.json','utf8')); if(typeof typhoon.active!=='boolean'||typeof typhoon.signature!=='string'||typeof warnings.signature!=='string'||!Array.isArray(warnings.payload?.data?.page?.list)) process.exit(1)"
       - name: Commit changed observation
         run: |
-          if git diff --quiet -- public/data/nmc-latest.json; then
-            echo "No new NMC observation"
+          if git diff --quiet -- public/data/nmc-latest.json public/data/nmc-warnings-latest.json; then
+            echo "No new NMC observation or warning"
             exit 0
           fi
           git config user.name "stormeye-data-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add public/data/nmc-latest.json
-          git commit -m "data: refresh NMC typhoon snapshot [skip ci]"
+          git add public/data/nmc-latest.json public/data/nmc-warnings-latest.json
+          git commit -m "data: refresh NMC weather snapshots [skip ci]"
           git push
